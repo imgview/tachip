@@ -1,4 +1,4 @@
-name: Build and Upload APK
+name: Build and Upload Kiryuu APK
 
 on:
   workflow_dispatch: # Tombol "Run workflow"
@@ -30,11 +30,11 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build APK
-      run: ./gradlew :kiryuu:assembleRelease # Perintah untuk build APK
+    - name: Build Kiryuu APK
+      run: ./gradlew :multisrc:overrides:wpmangareader:kiryuu:assembleRelease # Path Gradle untuk membuild APK dari Kiryuu.kt
 
-    - name: Upload APK as artifact
+    - name: Upload Kiryuu APK as artifact
       uses: actions/upload-artifact@v3
       with:
         name: kiryuu-apk
-        path: ./kiryuu/build/outputs/apk/release/*.apk # Path APK hasil build
+        path: ./multisrc/overrides/wpmangareader/kiryuu/build/outputs/apk/release/*.apk # Path APK yang dibuild
