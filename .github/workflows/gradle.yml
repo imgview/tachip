@@ -5,22 +5,24 @@ on:
     inputs:
       lang:
         description: Extension language (en, ar, es, pt...)
-        required: true
+        required: false
+        default: 'id'  # Set default language to 'id'
       extension:
         description: Target extension name
-        required: true
+        required: false
+        default: 'kiryuu'  # Set default extension name to 'kiryuu'
       ismultisrc:
         type: boolean
         description: Its a multisrc extension
         default: false
         required: false
       git-repo:
-        description: Git repo (Optional, defaults to <your name>/aniyomi-extensions
-        default: ''
+        description: Git repo (Optional, defaults to imgview/tachip)
+        default: 'imgview/tachip'  # Set default repo
         required: false
       git-ref:
-        description: Git Ref (Optional, defaults to master)
-        default: 'master'
+        description: Git Ref (Optional, defaults to kiwi)
+        default: 'kiwi'  # Set default branch to 'kiwi'
         required: false
 
 env:
@@ -48,6 +50,7 @@ jobs:
             echo "BASEPATH=generated-src" >> $GITHUB_ENV
             echo "BASESLUG=multisrc" >> $GITHUB_ENV
           fi
+
       - name: Clone Repository (Latest)
         uses: actions/checkout@v3
         with:
