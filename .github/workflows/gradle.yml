@@ -1,7 +1,7 @@
-name: Java CI
+name: Build and Upload APK
 
 on:
-  workflow_dispatch: # Mengaktifkan tombol "Run workflow" secara manual
+  workflow_dispatch: # Tombol "Run workflow"
   push:
     branches:
       - kiwi
@@ -30,5 +30,11 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build with Gradle
-      run: ./gradlew build
+    - name: Build APK
+      run: ./gradlew :kiryuu:assembleRelease # Perintah untuk build APK
+
+    - name: Upload APK as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: kiryuu-apk
+        path: ./kiryuu/build/outputs/apk/release/*.apk # Path APK hasil build
