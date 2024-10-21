@@ -15,7 +15,7 @@ on:
         default: false
         required: false
       git-repo:
-        description: Git repo (Optional, defaults to <your name>/tachip)
+        description: Git repo (Optional, defaults to <your name>/aniyomi-extensions
         default: ''
         required: false
       git-ref:
@@ -24,12 +24,14 @@ on:
         required: false
 
 env:
-  BASEPATH: generated-src
+  BASEPATH: src
   EXTPATH: ${{ github.event.inputs.lang }}/${{ github.event.inputs.extension }}
-  BASESLUG: multisrc
+  BASESLUG: individual
   EXTSLUG: ${{ github.event.inputs.lang }}:${{ github.event.inputs.extension }}
   REPO: ${{ github.event.inputs.git-repo }}
   CI_MODULE_GEN: true
+  CI_MULTISRC: ${{ github.event.inputs.ismultisrc }}
+  CI_MATRIX_LANG: ${{ github.event.inputs.lang }}
 
 jobs:
   build-extension:
@@ -42,14 +44,10 @@ jobs:
           if [[ -z "${{ env.REPO }}" ]]; then
             echo "REPO=${{ github.repository_owner }}/tachip" >> $GITHUB_ENV
           fi
-          if [[ ${{ github.event.inputs.ismultisrc }} == 'true' ]]; then
+          if [[ ${{ github.event.inputs.ismultisrc }} != false ]]; then
             echo "BASEPATH=generated-src" >> $GITHUB_ENV
             echo "BASESLUG=multisrc" >> $GITHUB_ENV
-          else
-            echo "BASEPATH=src" >> $GITHUB_ENV
-            echo "BASESLUG=individual" >> $GITHUB_ENV
           fi
-      
       - name: Clone Repository (Latest)
         uses: actions/checkout@v3
         with:
@@ -61,20 +59,20 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 11
-          distribution: adopt
+          distribution: zulu
 
       - name: Generate multisrc extensions
         if: ${{ github.event.inputs.ismultisrc == 'true' }}
         run: |
-          ./gradlew -p multisrc generateExtensions
+          ./gradlew generateExtensions
 
       - name: Build APK
         run: |
-          ./gradlew -p multisrc/overrides/wpmangareader/kiryuu assembleDebug
+          ./gradlew :multisrc:overrides:wpmangareader:${{ github.event.inputs.extension }}:assembleDebug
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.event.inputs.lang }}-${{ github.event.inputs.extension }}
-          path: "generated-src/${{ env.EXTPATH }}/build/outputs/apk/debug/*.apk"
+          name: ${{github.event.inputs.lang}}-${{ github.event.inputs.extension }}
+          path: "${{ env.BASEPATH }}/${{ env.EXTPATH }}/build/outputs/apk/debug/*.apk"
           retention-days: 1
