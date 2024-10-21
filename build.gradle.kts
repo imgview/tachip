@@ -20,13 +20,6 @@ allprojects {
     }
 }
 
-subprojects {
-    // Tambahkan dependensi inorichi.injekt jika diperlukan di semua subproyek
-    dependencies {
-        implementation("com.github.inorichi.injekt:injekt-core:1.0.0") // Ganti dengan versi yang valid
-    }
-}
-
 tasks.register<Delete>("clean") {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory.asFile.get())
 }
