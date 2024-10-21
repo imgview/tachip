@@ -66,13 +66,11 @@ jobs:
       - name: Generate multisrc extensions
         if: ${{ github.event.inputs.ismultisrc == 'true' }}
         run: |
-          cd multisrc
-          ./gradlew generateExtensions
+          ./gradlew -p multisrc generateExtensions
 
       - name: Build APK
         run: |
-          cd multisrc/overrides/wpmangareader/kiryuu
-          ./gradlew assembleDebug
+          ./gradlew -p multisrc/overrides/wpmangareader/kiryuu assembleDebug
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
