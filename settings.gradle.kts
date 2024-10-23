@@ -7,21 +7,18 @@ include(":lib-dataimage")
 project(":lib-dataimage").projectDir = File("lib/dataimage")
 
 if (System.getenv("CI") == null) {
-    // Pengembangan lokal (build penuh proyek)
+    // Local development (full project build)
 
     include(":multisrc")
     project(":multisrc").projectDir = File("multisrc")
 
-    // Hanya memuat Kiryuu dari multisrc
-    val name = "kiryuu"
-    val lang = "wpmangareader"
-    val projectName = ":extensions:multisrc:$lang:$name"
-
-    include(projectName)
-    project(projectName).projectDir = File("multisrc/overrides/$lang/$name")
+    // Memuat hanya Kiryuu dari multisrc
+    val kiryuuPath = "multisrc/overrides/wpmangareader/kiryuu"
+    include(":kiryuu")
+    project(":kiryuu").projectDir = File(kiryuuPath)
 
 } else {
-    // Menjalankan di CI (GitHub Actions)
+    // Running in CI (GitHub Actions)
 
     val isMultisrc = System.getenv("CI_MULTISRC") == "true"
     val lang = System.getenv("CI_MATRIX_LANG")
@@ -30,15 +27,9 @@ if (System.getenv("CI") == null) {
         include(":multisrc")
         project(":multisrc").projectDir = File("multisrc")
 
-        // Hanya memuat Kiryuu dari multisrc dalam CI
-        val name = "kiryuu"
-        val projectName = ":extensions:multisrc:$lang:$name"
-
-        include(projectName)
-        project(projectName).projectDir = File("multisrc/overrides/$lang/$name")
+        // Memuat Kiryuu dari multisrc dalam CI
+        val kiryuuPath = "multisrc/overrides/wpmangareader/kiryuu"
+        include(":kiryuu")
+        project(":kiryuu").projectDir = File(kiryuuPath)
     }
-}
-
-inline fun File.eachDir(block: (File) -> Unit) {
-    listFiles()?.filter { it.isDirectory }?.forEach { block(it) }
 }
