@@ -1,7 +1,17 @@
-name: Build Tachiyomi Extension
+name: Build and Upload APK to MediaFire
 
 on:
   workflow_dispatch:
+    inputs:
+      mediafire_email:
+        description: 'MediaFire Email'
+        required: true
+      mediafire_password:
+        description: 'MediaFire Password'
+        required: true
+      mediafire_api_key:
+        description: 'MediaFire API Key'
+        required: true
 
 jobs:
   build:
@@ -25,9 +35,9 @@ jobs:
 
       - name: Upload APK to MediaFire
         env:
-          MEDIAFIRE_API_KEY: ${{ secrets.MEDIAFIRE_API_KEY }}
-          MEDIAFIRE_EMAIL: ${{ secrets.MEDIAFIRE_EMAIL }}
-          MEDIAFIRE_PASSWORD: ${{ secrets.MEDIAFIRE_PASSWORD }}
+          MEDIAFIRE_API_KEY: ${{ github.event.inputs.mediafire_api_key }}
+          MEDIAFIRE_EMAIL: ${{ github.event.inputs.mediafire_email }}
+          MEDIAFIRE_PASSWORD: ${{ github.event.inputs.mediafire_password }}
         run: |
           sudo apt-get install python3-pip
           pip3 install requests
@@ -35,9 +45,9 @@ jobs:
 import requests
 
 # Credentials
-api_key = '${{ secrets.MEDIAFIRE_API_KEY }}'
-email = '${{ secrets.MEDIAFIRE_EMAIL }}'
-password = '${{ secrets.MEDIAFIRE_PASSWORD }}'
+api_key = '${{ github.event.inputs.mediafire_api_key }}'
+email = '${{ github.event.inputs.mediafire_email }}'
+password = '${{ github.event.inputs.mediafire_password }}'
 
 # Login to MediaFire
 login_url = 'https://www.mediafire.com/api/1.5/user/get_session.php'
