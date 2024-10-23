@@ -6,12 +6,15 @@ on:
       mediafire_email:
         description: 'MediaFire Email'
         required: true
+        default: ''
       mediafire_password:
         description: 'MediaFire Password'
         required: true
+        default: ''
       mediafire_api_key:
         description: 'MediaFire API Key'
         required: true
+        default: ''
 
 jobs:
   build:
