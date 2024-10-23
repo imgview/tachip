@@ -1,87 +1,40 @@
-name: Build and Upload APK to MediaFire
+name: Send APK via Email
 
 on:
   workflow_dispatch:
     inputs:
-      mediafire_email:
-        description: 'MediaFire Email'
+      email:
+        description: 'Recipient Email'
         required: true
-        default: ''
-      mediafire_password:
-        description: 'MediaFire Password'
+      password:
+        description: 'Email Password'
         required: true
-        default: ''
-      mediafire_api_key:
-        description: 'MediaFire API Key'
+      subject:
+        description: 'Email Subject'
         required: true
-        default: ''
+      body:
+        description: 'Email Body'
+        required: true
 
 jobs:
-  build:
+  send_email:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up AdoptOpenJDK 8
-        uses: actions/setup-java@v2
-        with:
-          java-version: '8'
-          distribution: 'adopt'
-
       - name: Build the project
         run: ./gradlew build
 
-      - name: List build outputs
-        run: ls -R build/outputs/apk
-
-      - name: Upload APK to MediaFire
-        env:
-          MEDIAFIRE_API_KEY: ${{ github.event.inputs.mediafire_api_key }}
-          MEDIAFIRE_EMAIL: ${{ github.event.inputs.mediafire_email }}
-          MEDIAFIRE_PASSWORD: ${{ github.event.inputs.mediafire_password }}
-        run: |
-          sudo apt-get install python3-pip
-          pip3 install requests
-          python3 -c "
-import requests
-
-# Credentials
-api_key = '${{ github.event.inputs.mediafire_api_key }}'
-email = '${{ github.event.inputs.mediafire_email }}'
-password = '${{ github.event.inputs.mediafire_password }}'
-
-# Login to MediaFire
-login_url = 'https://www.mediafire.com/api/1.5/user/get_session.php'
-login_data = {
-    'email': email,
-    'password': password,
-    'response_format': 'json'
-}
-
-response = requests.post(login_url, data=login_data)
-session_data = response.json()
-
-if session_data['response']['result'] != 'Success':
-    print('Login failed:', session_data['response']['result'])
-    exit(1)
-
-session_id = session_data['response']['session_id']
-
-# Upload file
-file_path = 'build/outputs/apk/release/your_app.apk'  # Ganti dengan nama file APK Anda
-upload_url = 'https://www.mediafire.com/api/1.5/upload/upload_file.php'
-upload_data = {
-    'response_format': 'json',
-    'session_id': session_id,
-    'api_key': api_key
-}
-
-with open(file_path, 'rb') as f:
-    files = {'file': f}
-    upload_response = requests.post(upload_url, data=upload_data, files=files)
-
-upload_result = upload_response.json()
-print(upload_result)
-"
+      - name: Send Email with Attachment
+        uses: mattmccutchen/send-mail@v1
+        with:
+          smtp-server: smtp.gmail.com
+          smtp-port: 587
+          smtp-user: ${{ github.event.inputs.email }}
+          smtp-password: ${{ github.event.inputs.password }}
+          to: ${{ github.event.inputs.email }}
+          subject: ${{ github.event.inputs.subject }}
+          body: ${{ github.event.inputs.body }}
+          attachments: build/outputs/apk/release/your_app.apk  # Ganti dengan nama file APK Anda
