@@ -1,9 +1,6 @@
 name: Build Tachiyomi Extension
 
 on:
-  push:
-    branches:
-      - anu
   workflow_dispatch:
 
 jobs:
