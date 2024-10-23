@@ -27,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: extension-artifact
-          path: build/outputs/apk/release/*.apk
+          path: multisrc/*.apk
           if-no-files-found: error  # Mengubah perilaku jika tidak ada file yang ditemukan
 
       - name: Create download link
