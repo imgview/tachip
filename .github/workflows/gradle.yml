@@ -10,7 +10,7 @@ jobs:
     steps:
     # Step 1: Checkout repository
     - name: Checkout Code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     # Step 2: Setup Java (Java 11)
     - name: Setup JDK 11
@@ -21,7 +21,7 @@ jobs:
 
     # Step 3: Setup Gradle cache untuk mempercepat build di masa depan
     - name: Setup Gradle Cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.gradle/caches
@@ -34,9 +34,9 @@ jobs:
     - name: Build Kiryuu
       run: ./gradlew -p multisrc/overrides/wpmangareader/kiryuu build
 
-    # Step 5: Upload APK to GitHub as an artifact
+    # Step 5: Upload APK to GitHub as an artifact (using v3)
     - name: Upload Kiryuu APK
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: kiryuu-extension-apk
         path: multisrc/overrides/wpmangareader/kiryuu/build/outputs/**/*.apk  # Menyesuaikan dengan lokasi output APK
