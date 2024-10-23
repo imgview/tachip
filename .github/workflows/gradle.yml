@@ -1,17 +1,17 @@
-name: Build Kiryuu Extension
+name: Build Tachiyomi Extension
 
 on:
   push:
     branches:
-      - main  # Ganti dengan nama cabang yang sesuai jika diperlukan
-  pull_request:
+      - anu
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Set up JDK 8
@@ -19,15 +19,18 @@ jobs:
         with:
           java-version: '8'
 
-      - name: Build with Gradle
+      - name: Install Gradle 7.4
+        run: |
+          wget https://services.gradle.org/distributions/gradle-7.4-bin.zip
+          unzip gradle-7.4-bin.zip
+          sudo mv gradle-7.4 /opt/gradle
+          sudo ln -s /opt/gradle/bin/gradle /usr/bin/gradle
+
+      - name: Build the project
         run: ./gradlew build
 
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
         with:
-          name: kiryuu-artifact
-          path: path/to/your/build/output  # Ganti dengan jalur keluaran build Anda
-
-      - name: Create Download Link
-        run: |
-          echo "Download your artifact here: https://github.com/${{ github.repository }}/actions/artifacts"
+          name: extension-artifact
+          path: build/outputs/apk/release/*.apk
