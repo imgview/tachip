@@ -12,10 +12,10 @@ if (System.getenv("CI") == null) {
     include(":multisrc")
     project(":multisrc").projectDir = File("multisrc")
 
-    // Memuat hanya Kiryuu dari multisrc
-    val kiryuuPath = "multisrc/overrides/wpmangareader/kiryuu"
     include(":kiryuu")
-    project(":kiryuu").projectDir = File(kiryuuPath)
+project(":kiryuu").projectDir = File("multisrc/overrides/wpmangareader/kiryuu")
+
+apply from: "multisrc/overrides/wpmangareader/kiryuu/additional.gradle.kts"
 
 } else {
     // Running in CI (GitHub Actions)
@@ -27,9 +27,9 @@ if (System.getenv("CI") == null) {
         include(":multisrc")
         project(":multisrc").projectDir = File("multisrc")
 
-        // Memuat Kiryuu dari multisrc dalam CI
-        val kiryuuPath = "multisrc/overrides/wpmangareader/kiryuu"
         include(":kiryuu")
-        project(":kiryuu").projectDir = File(kiryuuPath)
+project(":kiryuu").projectDir = File("multisrc/overrides/wpmangareader/kiryuu")
+
+apply from: "multisrc/overrides/wpmangareader/kiryuu/additional.gradle.kts"
     }
 }
