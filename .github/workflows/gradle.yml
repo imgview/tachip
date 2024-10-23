@@ -73,7 +73,6 @@ session_id = session_data['response']['session_id']
 file_path = 'build/outputs/apk/release/your_app.apk'  # Ganti dengan nama file APK Anda
 upload_url = 'https://www.mediafire.com/api/1.5/upload/upload_file.php'
 upload_data = {
-    'file': open(file_path, 'rb'),
     'response_format': 'json',
     'session_id': session_id,
     'api_key': api_key
