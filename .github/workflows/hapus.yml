@@ -1,0 +1,24 @@
+name: Delete Artifacts
+
+on:
+  workflow_dispatch:  # Memungkinkan workflow dijalankan secara manual
+
+jobs:
+  delete-artifacts:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Delete Successful Artifacts
+      uses: actions/delete-artifact@v3
+      with:
+        name: kuryuu-apk  # Ganti dengan nama artefak yang ingin dihapus
+        status: success  # Menghapus artefak yang berhasil
+
+    - name: Delete Failed Artifacts
+      uses: actions/delete-artifact@v3
+      with:
+        name: kuryuu-apk  # Ganti dengan nama artefak yang ingin dihapus
+        status: failure  # Menghapus artefak yang gagal
