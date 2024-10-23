@@ -1,6 +1,7 @@
 name: Build Kuryuu
 
 on:
+  workflow_dispatch:  # Memungkinkan workflow dijalankan secara manual
   push:
     branches:
       - main
