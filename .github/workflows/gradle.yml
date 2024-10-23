@@ -1,46 +1,33 @@
 name: Build Kiryuu Extension
 
 on:
-  workflow_dispatch:  # Memungkinkan menjalankan workflow secara manual dari GitHub UI
+  push:
+    branches:
+      - main  # Ganti dengan nama cabang yang sesuai jika diperlukan
+  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout repository
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    # Step 2: Setup Java (Java 11)
-    - name: Setup JDK 8
-      uses: actions/setup-java@v3
-      with:
-        java-version: '8'
-        distribution: 'temurin'  # Menggunakan distribusi OpenJDK dari Temurin
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
 
-    # Step 3: Setup Gradle cache untuk mempercepat build di masa depan
-    - name: Setup Gradle Cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle
+      - name: Build with Gradle
+        run: ./gradlew build
 
-    # Step 4: Build the Kiryuu extension
-    - name: Build Kiryuu
-      run: ./gradlew -p multisrc/overrides/wpmangareader/kiryuu build
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: kiryuu-artifact
+          path: path/to/your/build/output  # Ganti dengan jalur keluaran build Anda
 
-    # Step 5: Upload APK to GitHub as an artifact (using v3)
-    - name: Upload Kiryuu APK
-      uses: actions/upload-artifact@v3
-      with:
-        name: kiryuu-extension-apk
-        path: multisrc/overrides/wpmangareader/kiryuu/build/outputs/**/*.apk  # Menyesuaikan dengan lokasi output APK
-
-    # Step 6: (Optional) Cleanup build artifacts
-    - name: Cleanup
-      run: ./gradlew clean
+      - name: Create Download Link
+        run: |
+          echo "Download your artifact here: https://github.com/${{ github.repository }}/actions/artifacts"
