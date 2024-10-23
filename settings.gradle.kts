@@ -11,9 +11,11 @@ if (System.getenv("CI") == null) {
     include(":multisrc")
     project(":multisrc").projectDir = File("multisrc")
 
+    // Menambahkan Kiryuu dari multisrc
     include(":kiryuu")
     project(":kiryuu").projectDir = File("multisrc/overrides/wpmangareader/kiryuu")
 
+    // Mengimpor additional.gradle.kts
     apply(from = "multisrc/overrides/wpmangareader/kiryuu/additional.gradle.kts")
 } else {
     // Running in CI (GitHub Actions)
@@ -24,9 +26,11 @@ if (System.getenv("CI") == null) {
         include(":multisrc")
         project(":multisrc").projectDir = File("multisrc")
 
+        // Menambahkan Kiryuu dari multisrc dalam CI
         include(":kiryuu")
         project(":kiryuu").projectDir = File("multisrc/overrides/wpmangareader/kiryuu")
 
+        // Mengimpor additional.gradle.kts
         apply(from = "multisrc/overrides/wpmangareader/kiryuu/additional.gradle.kts")
     }
 }
