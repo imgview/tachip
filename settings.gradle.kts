@@ -12,22 +12,33 @@ if (System.getenv("CI") == null) {
     include(":multisrc")
     project(":multisrc").projectDir = File("multisrc")
 
-    // Hanya memuat Kuryuu
-    include(":extensions:individual:id:kiryuu")
-    project(":extensions:individual:id:kiryuu").projectDir = File("src/id/kiryuu")
+    // Hanya memuat Kiryuu dari multisrc
+    val name = "kiryuu"
+    val lang = "wpmangareader"
+    val projectName = ":extensions:multisrc:$lang:$name"
+    
+    include(projectName)
+    project(projectName).projectDir = File("multisrc/overrides/$lang/$name")
+    
 } else {
     // Running in CI (GitHub Actions)
 
+    val isMultisrc = System.getenv("CI_MULTISRC") == "true"
     val lang = System.getenv("CI_MATRIX_LANG")
 
-    // Hanya memuat Kuryuu untuk CI
-    if (lang == "id") {
-        include(":extensions:individual:id:kiryuu")
-        project(":extensions:individual:id:kiryuu").projectDir = File("src/id/kiryuu")
+    if (isMultisrc && lang == "wpmangareader") {
+        include(":multisrc")
+        project(":multisrc").projectDir = File("multisrc")
+
+        // Hanya memuat Kiryuu dari multisrc dalam CI
+        val name = "kiryuu"
+        val projectName = ":extensions:multisrc:$lang:$name"
+
+        include(projectName)
+        project(projectName).projectDir = File("multisrc/overrides/$lang/$name")
     }
 }
 
-// Fungsi tambahan untuk mengiterasi direktori
 inline fun File.eachDir(block: (File) -> Unit) {
     listFiles()?.filter { it.isDirectory }?.forEach { block(it) }
 }
