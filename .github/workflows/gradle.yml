@@ -23,14 +23,53 @@ jobs:
       - name: List build outputs
         run: ls -R build/outputs/apk
 
-      - name: Upload APK to cache
-        uses: actions/upload-artifact@v4
-        with:
-          name: extension-artifact
-          path: multisrc/*.apk
-          if-no-files-found: error  # Mengubah perilaku jika tidak ada file yang ditemukan
-
-      - name: Create download link
-        id: create_link
+      - name: Upload APK to MediaFire
+        env:
+          MEDIAFIRE_API_KEY: ${{ secrets.MEDIAFIRE_API_KEY }}
+          MEDIAFIRE_EMAIL: ${{ secrets.MEDIAFIRE_EMAIL }}
+          MEDIAFIRE_PASSWORD: ${{ secrets.MEDIAFIRE_PASSWORD }}
         run: |
-          echo "Download your APK here: [Download APK](https://github.com/${{ github.repository }}/actions/artifacts/${{ steps.upload-artifact.outputs.artifact_id }})"
+          sudo apt-get install python3-pip
+          pip3 install requests
+          python3 -c "
+import requests
+
+# Credentials
+api_key = '${{ secrets.MEDIAFIRE_API_KEY }}'
+email = '${{ secrets.MEDIAFIRE_EMAIL }}'
+password = '${{ secrets.MEDIAFIRE_PASSWORD }}'
+
+# Login to MediaFire
+login_url = 'https://www.mediafire.com/api/1.5/user/get_session.php'
+login_data = {
+    'email': email,
+    'password': password,
+    'response_format': 'json'
+}
+
+response = requests.post(login_url, data=login_data)
+session_data = response.json()
+
+if session_data['response']['result'] != 'Success':
+    print('Login failed:', session_data['response']['result'])
+    exit(1)
+
+session_id = session_data['response']['session_id']
+
+# Upload file
+file_path = 'build/outputs/apk/release/your_app.apk'  # Ganti dengan nama file APK Anda
+upload_url = 'https://www.mediafire.com/api/1.5/upload/upload_file.php'
+upload_data = {
+    'file': open(file_path, 'rb'),
+    'response_format': 'json',
+    'session_id': session_id,
+    'api_key': api_key
+}
+
+with open(file_path, 'rb') as f:
+    files = {'file': f}
+    upload_response = requests.post(upload_url, data=upload_data, files=files)
+
+upload_result = upload_response.json()
+print(upload_result)
+"
