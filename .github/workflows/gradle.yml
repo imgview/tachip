@@ -20,7 +20,8 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '11'  # Atau versi JDK yang sesuai dengan proyek Anda
+        java-version: '11'  # Versi JDK yang Anda inginkan
+        distribution: 'temurin'  # Menentukan distribusi JDK (misalnya: temurin, adopt, zulu)
 
     - name: Build Kuryuu
       env:
