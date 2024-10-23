@@ -7,7 +7,7 @@ include(":lib-dataimage")
 project(":lib-dataimage").projectDir = File("lib/dataimage")
 
 if (System.getenv("CI") == null) {
-    // Local development (full project build)
+    // Pengembangan lokal (build penuh proyek)
 
     include(":multisrc")
     project(":multisrc").projectDir = File("multisrc")
@@ -16,12 +16,12 @@ if (System.getenv("CI") == null) {
     val name = "kiryuu"
     val lang = "wpmangareader"
     val projectName = ":extensions:multisrc:$lang:$name"
-    
+
     include(projectName)
     project(projectName).projectDir = File("multisrc/overrides/$lang/$name")
-    
+
 } else {
-    // Running in CI (GitHub Actions)
+    // Menjalankan di CI (GitHub Actions)
 
     val isMultisrc = System.getenv("CI_MULTISRC") == "true"
     val lang = System.getenv("CI_MATRIX_LANG")
