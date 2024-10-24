@@ -27,6 +27,12 @@ jobs:
       - name: Build the project
         run: ./gradlew build
 
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: APK
+          path: build/outputs/apk/release/your_app.apk  # Sesuaikan dengan nama dan lokasi APK
+
       - name: Send Email with Attachment
         uses: mattmccutchen/send-mail@v1
         with:
@@ -37,4 +43,4 @@ jobs:
           to: ${{ github.event.inputs.email }}
           subject: ${{ github.event.inputs.subject }}
           body: ${{ github.event.inputs.body }}
-          attachments: build/outputs/apk/release/your_app.apk  # Ganti dengan nama file APK Anda
+          attachments: build/outputs/apk/release/your_app.apk  # Sesuaikan dengan nama file APK Anda
