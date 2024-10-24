@@ -32,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lang: [all, en, ar, ca, de, es, fr, id, it, ja, ko, pt, ru, th, tr, vi, zh, bg, hi, pl]
+        lang: [id]
     steps:
       - name: Checkout anu branch
         uses: actions/checkout@v2
@@ -69,7 +69,7 @@ jobs:
           cache-disabled: true
 
       - name: Upload "${{ matrix.lang }}" APKs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: "multisrc-${{ matrix.lang }}-apks"
           path: "**/*.apk"
@@ -85,7 +85,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lang: [all, en, ar, ca, de, es, fr, id, it, ja, ko, pt, ru, th, tr, vi, zh, bg, hi, pl]
+        lang: [id]
     steps:
       - name: Checkout anu branch
         uses: actions/checkout@v2
@@ -114,7 +114,7 @@ jobs:
           cache-disabled: true
 
       - name: Upload "${{ matrix.lang }}" APKs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: "individual-${{ matrix.lang }}-apks"
           path: "**/*.apk"
