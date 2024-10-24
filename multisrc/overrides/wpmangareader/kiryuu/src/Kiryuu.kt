@@ -10,7 +10,7 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class Kiryuu : WPMangaReader("Kiryuu", "https://kiryuu.id", "id", dateFormat = SimpleDateFormat("MMMM dd, yyyy", Locale("id"))) {
-    // Formerly "Kiryuu (WP Manga Stream)"
+    // Formerly "Kiryuu (WP Manga Steam)"
     override val id = 3639673976007021338
 
     private val rateLimitInterceptor = RateLimitInterceptor(4)
