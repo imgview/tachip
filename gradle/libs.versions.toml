@@ -17,7 +17,7 @@ kotlin-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", ver
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines_version" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines_version" }
 
-injekt-core = { module = "com.github.inorichi.injekt:injekt-core", version = "65b0440" }
+injekt-core = { module = "com.github.inorichi.injekt:injekt-core", version = "65b04400cf" }
 jsoup = { module = "org.jsoup:jsoup", version = "1.13.1" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version = "4.9.1" }
 rxandroid = { module = "io.reactivex:rxandroid", version = "1.2.1" }
