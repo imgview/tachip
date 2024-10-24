@@ -16,7 +16,15 @@ allprojects {
     repositories {
         mavenCentral()
         google()
-        maven(url = "https://jitpack.io")
+        maven(url = "https://jitpack.io") // Menambahkan repositori JitPack
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven("https://jitpack.io") // Menambahkan repositori JitPack di sini
     }
 }
 
