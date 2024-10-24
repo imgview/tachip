@@ -1,88 +1,61 @@
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        mavenCentral()
-        google()
-        maven(url = "https://jitpack.io") // Menambahkan repositori JitPack
-    }
-}
-
 include(":core")
 
-include(":lib-ratelimit")
-project(":lib-ratelimit").projectDir = File("lib/ratelimit")
+// Load all modules under /lib
+File(rootDir, "lib").eachDir { include("lib:${it.name}") }
 
-include(":lib-dataimage")
-project(":lib-dataimage").projectDir = File("lib/dataimage")
+// Load all modules under /multisrc
+File(rootDir, "multisrc").eachDir { include("multisrc:${it.name}") }
 
-if (System.getenv("CI") == null) {
+if (System.getenv("CI") != "true") {
     // Local development (full project build)
 
-    include(":multisrc")
-    project(":multisrc").projectDir = File("multisrc")
-
-    // Loads all extensions
-    File(rootDir, "src").eachDir { dir ->
-        dir.eachDir { subdir ->
-            val name = ":extensions:individual:${dir.name}:${subdir.name}"
-            include(name)
-            project(name).projectDir = File("src/${dir.name}/${subdir.name}")
-        }
-    }
-    // Loads generated extensions from multisrc
-    File(rootDir, "generated-src").eachDir { dir ->
-        dir.eachDir { subdir ->
-            val name = ":extensions:multisrc:${dir.name}:${subdir.name}"
-            include(name)
-            project(name).projectDir = File("generated-src/${dir.name}/${subdir.name}")
-        }
-    }
-
     /**
-     * If you're developing locally and only want to work with a single module,
-     * comment out the parts above and uncomment below.
+     * Add or remove modules to load as needed for local development here.
      */
-//    val lang = "all"
-//    val name = "mangadex"
-//    val projectName = ":extensions:individual:$lang:$name"
-//    val projectName = ":extensions:multisrc:$lang:$name"
-//    include(projectName)
-//    project(projectName).projectDir = File("src/${lang}/${name}")
-//    project(projectName).projectDir = File("generated-src/${lang}/${name}")
+    loadAllIndividualExtensions()
+    // loadIndividualExtension("all", "mangadex")
 } else {
     // Running in CI (GitHub Actions)
 
-    val isMultisrc = System.getenv("CI_MULTISRC") == "true"
-    val lang = System.getenv("CI_MATRIX_LANG")
+    val chunkSize = System.getenv("CI_CHUNK_SIZE").toInt()
+    val chunk = System.getenv("CI_CHUNK_NUM").toInt()
 
-    if (isMultisrc) {
-        include(":multisrc")
-        project(":multisrc").projectDir = File("multisrc")
-
-        // Loads generated extensions from multisrc
-        File(rootDir, "generated-src").eachDir { dir ->
-            if (dir.name == lang) {
-                dir.eachDir { subdir ->
-                    val name = ":extensions:multisrc:${dir.name}:${subdir.name}"
-                    include(name)
-                    project(name).projectDir = File("generated-src/${dir.name}/${subdir.name}")
-                }
-            }
-        }
-    } else {
-        // Loads all extensions
-        File(rootDir, "src").eachDir { dir ->
-            if (dir.name == lang) {
-                dir.eachDir { subdir ->
-                    val name = ":extensions:individual:${dir.name}:${subdir.name}"
-                    include(name)
-                    project(name).projectDir = File("src/${dir.name}/${subdir.name}")
-                }
-            }
+    run {
+        // Loads individual extensions
+        File(rootDir, "src").getChunk(chunk, chunkSize)?.forEach {
+            include("src:${it.parentFile.name}:${it.name}")
         }
     }
 }
 
-inline fun File.eachDir(block: (File) -> Unit) {
-    listFiles()?.filter { it.isDirectory }?.forEach { block(it) }
+fun loadAllIndividualExtensions() {
+    File(rootDir, "src").eachDir { dir ->
+        dir.eachDir { subdir ->
+            include("src:${dir.name}:${subdir.name}")
+        }
+    }
+}
+fun loadIndividualExtension(lang: String, name: String) {
+    include("src:${lang}:${name}")
+}
+
+fun File.getChunk(chunk: Int, chunkSize: Int): List<File>? {
+    return listFiles()
+        // Lang folder
+        ?.filter { it.isDirectory }
+        // Extension subfolders
+        ?.mapNotNull { dir -> dir.listFiles()?.filter { it.isDirectory } }
+        ?.flatten()
+        ?.sortedBy { it.name }
+        ?.chunked(chunkSize)
+        ?.get(chunk)
+}
+
+fun File.eachDir(block: (File) -> Unit) {
+    val files = listFiles() ?: return
+    for (file in files) {
+        if (file.isDirectory && file.name != ".gradle" && file.name != "build") {
+            block(file)
+        }
+    }
 }
