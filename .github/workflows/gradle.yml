@@ -1,46 +1,32 @@
-name: Send APK via Email
+name: Build and Upload APK
 
+# Trigger manually from GitHub interface
 on:
   workflow_dispatch:
-    inputs:
-      email:
-        description: 'Recipient Email'
-        required: true
-      password:
-        description: 'Email Password'
-        required: true
-      subject:
-        description: 'Email Subject'
-        required: true
-      body:
-        description: 'Email Body'
-        required: true
 
 jobs:
-  send_email:
+  build_and_upload:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # Step 2: Set up JDK 8 (since user prefers Java 8)
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '8'
+
+      # Step 3: Build the project using Gradle
       - name: Build the project
         run: ./gradlew build
 
+      # Step 4: Upload the APK artifact to GitHub
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v3
         with:
           name: APK
-          path: build/outputs/apk/release/your_app.apk  # Sesuaikan dengan nama dan lokasi APK
-
-      - name: Send Email with Attachment
-        uses: mattmccutchen/send-mail@v1
-        with:
-          smtp-server: smtp.gmail.com
-          smtp-port: 587
-          smtp-user: ${{ github.event.inputs.email }}
-          smtp-password: ${{ github.event.inputs.password }}
-          to: ${{ github.event.inputs.email }}
-          subject: ${{ github.event.inputs.subject }}
-          body: ${{ github.event.inputs.body }}
-          attachments: build/outputs/apk/release/your_app.apk  # Sesuaikan dengan nama file APK Anda
+          path: build/outputs/apk/release/your_app.apk  # Ganti dengan nama dan lokasi APK yang sesuai
