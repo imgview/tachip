@@ -16,7 +16,7 @@ allprojects {
     repositories {
         mavenCentral()
         google()
-        maven(url = "https://jitpack.io") // Menambahkan repositori JitPack
+        maven(url = "https://jitpack.io")
     }
 }
 
@@ -26,6 +26,10 @@ dependencyResolutionManagement {
         mavenCentral()
         maven("https://jitpack.io") // Menambahkan repositori JitPack di sini
     }
+}
+
+dependencies {
+    implementation("com.github.imgview:tachip:1.0.0") // Ganti 'Tag' dengan versi yang sesuai
 }
 
 tasks.register<Delete>("clean") {
