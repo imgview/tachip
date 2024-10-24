@@ -1,3 +1,12 @@
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        google()
+        maven(url = "https://jitpack.io") // Menambahkan repositori JitPack
+    }
+}
+
 include(":core")
 
 include(":lib-ratelimit")
