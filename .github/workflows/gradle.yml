@@ -1,41 +1,63 @@
-name: Build and Upload APK
+name: Build single extension
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      lang:
+        description: Extension language (en, ar, es, pt...)
+        default: 'id'
+        required: true
+      extension:
+        description: Target extension name
+        default: 'kiryuu'
+        required: true
+      git-repo:
+        description: Git repo (Optional, defaults to <your name>/aniyomi-extensions)
+        default: 'imgview/tachiyomi-extensions'
+        required: false
+      git-ref:
+        description: Git Ref (Optional, defaults to master)
+        default: 'spoon'
+        required: false
+
+env:
+  EXTPATH: ${{ github.event.inputs.lang }}/${{ github.event.inputs.extension }}
+  EXTSLUG: ${{ github.event.inputs.lang }}:${{ github.event.inputs.extension }}
+  REPO: ${{ github.event.inputs.git-repo }}
+  CI_MODULE_GEN: true
 
 jobs:
-  build_and_upload:
+  build-extension:
+    name: Build a single extension
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        lang: [all, en]  # Ubah sesuai kebutuhan
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Check inputs
+        if: env.REPO == ''
+        run: |
+          set -e
+          echo "REPO=${{ github.repository_owner }}/aniyomi-extensions" >> $GITHUB_ENV
 
-      - name: Set up JDK
-        uses: actions/setup-java@v1
+      - name: Clone Repository
+        uses: actions/checkout@v3
         with:
-          java-version: '11'  # Menggunakan Java 11
+          repository: ${{ env.REPO }}
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.git-ref }}
 
-      - name: Build "${{ matrix.lang }}" extensions
-        uses: gradle/gradle-command-action@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: adopt
+
+      - name: Build APK
         env:
-          CI_MULTISRC: "false"
-          CI_MATRIX_LANG: ${{ matrix.lang }}
-          ALIAS: ${{ secrets.ALIAS }}  # Ganti atau hapus jika tidak perlu
-          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}  # Ganti atau hapus jika tidak perlu
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}  # Ganti atau hapus jika tidak perlu
-        with:
-          arguments: assembleRelease  # Gunakan assembleDebug jika perlu
-          cache-disabled: true
+          CI: false
+        run: ./gradlew id-kiryuu:assembleDebug
 
-      - name: Upload "${{ matrix.lang }}" APKs
-        uses: actions/upload-artifact@v2
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
         with:
-          name: "${{ matrix.lang }}-apks"
-          path: "**/*.apk"
+          name: ${{ github.event.inputs.lang }}-${{ github.event.inputs.extension }}
+          path: "src/${{ env.EXTPATH }}/build/outputs/apk/debug/*.apk"
+          retention-days: 1
